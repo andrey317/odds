@@ -1,5 +1,6 @@
 import requests
 import matplotlib.pyplot as plt
+from apython import  load_json, dumpjson
 from datetime import datetime, timedelta
 import numpy as np
 
@@ -132,7 +133,10 @@ def graph(board, aggr):
         addr = lb["staker_address"]
         addr_strip = addr[5:9] + '...' + addr[-4:]
         y0 = int(lb["total_points"])
-        k = aggr[addr]["total"]
+        if ag:=aggr.get(addr):
+            k = ag["total"]
+        else:
+            k = 0
         y_values.append( [y0 + k * x for x in x_values] )  # y = n * x for n in 1 to 20
 
         plt.text(dates[-1], y_values[i][-1], f'#{i + 1:02}', color=colormap(i / lines), va='bottom')
@@ -154,14 +158,15 @@ if __name__ == "__main__":
         #dumpjson("leaderboard.json", board)
 
         sg_data = parse_stargaze()
-        # dumpjson("sg_data.json", sg_data)
+        #dumpjson("sg_data.json", sg_data)
 
-        #sg_data = load_json("1.json")
+        #sg_data = load_json("sg_data.json")
         aggr = process_data(sg_data)
 
-        graph(board, aggr)
+
 
     except Exception as e:
         print(f"An error occurred: {e}")
 
+    graph(board, aggr)
 
